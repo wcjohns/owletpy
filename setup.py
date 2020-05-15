@@ -13,12 +13,12 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.0.6',
+    version='1.0.11',
 
     description='Python client for Owlet monitors',
 
     # The project's main homepage.
-    url='https://github.com/CAB426/pyowlet',
+    url='https://github.com/CAB426/owletpy',
 
     # Author details
     author='CAB426, mbevand, craigjmidwinter, angel12',
@@ -35,6 +35,6 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['requests','pyrebase'],
+    install_requires=['requests>=2.23.0'],
     extras_require={},
 )
