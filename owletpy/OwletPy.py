@@ -1,15 +1,7 @@
-REQUIREMENTS = ['pyrebase==3.0.27']
-
-
 import json
-import logging
 import time
 import sys
 import requests
-import pyrebase
-
-logging.basicConfig(filename='pyowlet.log', level=logging.DEBUG)
-
 
 class OwletPy(object):
 
@@ -64,7 +56,6 @@ class OwletPy(object):
 
         # if the auth token doesnt exist or has expired, login to get a new one
         if (self.auth_token is None) or (self.expire_time <= time.time()):
-            logging.debug('Auth Token expired, need to get a new one')
             self.login(self.username, self.password)
 
         self.auth_header = {'content-type': 'application/json',
@@ -163,22 +154,21 @@ class OwletPy(object):
                 self.owlet_region, self.region_config.keys()))
         if self.auth_token is not None and (self.expire_time > time.time()):
             return
-        # authenticate against pyrebase, get the JWT
-        config = {
-                "apiKey": self.region_config[self.owlet_region]['apiKey'],
-                "databaseURL": self.region_config[self.owlet_region]['databaseURL'],
-                "storageBucket":self.region_config[self.owlet_region]['storage_bucket'],
-                "authDomain": None,
-                }
-        pb = pyrebase.initialize_app(config)
-        auth = pb.auth()
-        user = auth.sign_in_with_email_and_password(owlet_user, owlet_pass)
+                
+        request_ref = "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key={0}".format(self.region_config[self.owlet_region]['apiKey'])
+        headers = {"content-type": "application/json; charset=UTF-8"}
+        data = json.dumps({"email": email, "password": password, "returnSecureToken": True})
+        request_object = requests.post(request_ref, headers=headers, data=data)
+        self.current_user = request_object.json()
+        user = request_object.json()
         jwt = user['idToken']
+        
         # authenticate against owletdata.com, get the mini_token
         r = requests.get(self.region_config[self.owlet_region]
                          ['url_mini'], headers={'Authorization': jwt})
         r.raise_for_status()
         mini_token = r.json()['mini_token']
+        
         # authenticate against Ayla, get the access_token
         r = requests.post(self.region_config[self.owlet_region]['url_signin'], json={
                     "app_id": self.region_config[self.owlet_region]['app_id'],
@@ -188,5 +178,6 @@ class OwletPy(object):
                     })
         r.raise_for_status()
         self.auth_token = r.json()['access_token']
+        
         # we will re-auth 60 seconds before the token expires
         self.expire_time = time.time() + r.json()['expires_in'] - 60
