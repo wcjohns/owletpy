@@ -122,11 +122,14 @@ class OwletPy(object):
         for value in data:
             name = value['property']['name'].lower()
             val = value['property']['value']
+            uptime = value['property']['data_updated_at']
 
             if name not in self.monitored_properties:
                 self.monitored_properties.append(name)
 
             self.__setattr__(name, val)
+            self.__setattr__(name+"_updated_at", uptime)
+
 
         self.prop_expire_time = time.time() + self.prop_ttl
 
