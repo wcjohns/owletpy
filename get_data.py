@@ -78,53 +78,6 @@ else:
         'SOCK_CONNECTION'
     ]
 
-    # Get individual raw properties
-    #print( 'Monitored properties:' )
-    #for measure in pyowletClient.monitored_properties:
-    #    val = pyowletClient.get_properties(measure)
-    #    print("\t" + str(val) )
-    #sys.exit(0)
-
-    #pyowletClient.get_properties('LOGGED_DATA_CACHE') -> {'type': 'Property', 'name': 'LOGGED_DATA_CACHE', 'base_type': 'file', 'read_only': True, 'direction': 'output', 'scope': 'user', 'data_updated_at': '2020-05-03T22:42:23Z', 'key': 163791793, 'device_key': 26305395, 'product_name': 'Owlet Baby Monitors', 'track_only_changes': False, 'display_name': 'Logged Data Cache', 'host_sw_version': False, 'time_series': False, 'derived': False, 'app_type': None, 'recipe': None, 'value': 'https://ads-owlue1.aylanetworks.com/apiv1/devices/26305395/properties/LOGGED_DATA_CACHE/datapoints/5b23918c-8d8f-11ea-eb0f-fe9bfe032f2d.json', 'denied_roles': [], 'ack_enabled': False, 'retention_days': 30}
-    #log_url = pyowletClient.get_properties('LOGGED_DATA_CACHE')['value']
-    #print(log_url)
-    #print('\n')
-    
-
-    #try:
-    #    result = requests.get(
-    #            log_url,
-    #            headers=pyowletClient.get_auth_header(),
-    #            timeout=5
-    #        )
-    #except RequestException:
-    #    print( 'RequestException' )
-
-    #print( 'result.status_code:' )  
-    #print( result.status_code )
-    #print( '\n' )
-
-    #json = result.json()
-    #print( 'JSON: ')
-    #print( json )
-    #print( '\n' )
-
-    #download_file_url = json['datapoint']['file']
-
-    #result = requests.get( download_file_url )
-
-    #print( 'Result.encoding: ')
-    #print( result.encoding )
-    #print( '\n' )
-
-    #print( 'Result.content: ')
-    #print( result.content )
-    #print( '\n' )
-
-    #file = open("exampleout", "wb")
-    #file.write( result.content )
-    #file.close()
-
     # CSV header
     header = "Local-Time,UTC-Time,DSN,MovementUpdatedTime,Movement,OxygenUpdatedTime,Oxygen,HBPMUpdateTime,HBPM,ChargeUpdateTime,"
     header = header + "Charge,SockConnectUpdateTime,SockConnection,SockOffUpdateTime,SockOff,BaseStationUpdateTime,BaseStationOn,BatteryLevelUpdateTime,BatteryLevel"
@@ -163,10 +116,9 @@ else:
         if last_update['MOVEMENT'] != pyowletClient.movement_updated_at:
             last_update['MOVEMENT'] = pyowletClient.movement_updated_at
             line = line + str(pyowletClient.movement_updated_at) + "," + str(pyowletClient.movement) + ","
-            if last_update_value['MOVEMENT'] != pyowletClient.movement:
-                num_updates = num_updates + 1
-                num_status_updates = num_status_updates + 1
-                last_update_value['MOVEMENT'] = pyowletClient.movement
+            num_updates = num_updates + 1
+            num_status_updates = num_status_updates + 1
+            last_update_value['MOVEMENT'] = pyowletClient.movement
         else:
             line = line + ",,"
         
